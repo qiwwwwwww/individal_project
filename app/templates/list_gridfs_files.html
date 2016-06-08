@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+    <title>Files</title>
+    </head>
+    <body>
+    <h1>Files</h1>
+    <ul>
+    {% for file in files %}
+    <li><a href="{{url_for('serve_gridfs_file', oid=file._id)}}">{{file.name}}</a></li>
+    {% endfor %}
+    </ul>
+    <a href="{{ url_for('upload_file') }}">Upload new file</a>
+    </body>
+    </html>
