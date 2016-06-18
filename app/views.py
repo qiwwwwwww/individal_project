@@ -5,10 +5,10 @@ from pymongo import MongoClient
 from werkzeug.utils import secure_filename
 from gridfs.errors import NoFile
 from bson.objectid import ObjectId
-from HTMLParser import HTMLParser
 
 ALLOWED_EXTENSIONS = set(['apk'])
-fs = gridfs.GridFS(MongoClient().pancake)
+db=MongoClient().pancake
+fs = gridfs.GridFS(db)
 
 
 def allowed_file(filename):
@@ -42,6 +42,13 @@ def list_gridfs_files():
     files = [fs.get_last_version(file) for file in fs.list()]
     oid=[str(file._id) for file in files] 
     return render_template('list_gridfs_files.html',oid =oid, files=files)   
+
+
+@app.route('/remove/<filename>')
+def remove_gridfs_files(filename):
+    db.fs.files.remove({"filename": filename})
+    return render_template('remove.html', filename=filename, file=file)
+
 
 
 @app.route('/files/<oid>')
