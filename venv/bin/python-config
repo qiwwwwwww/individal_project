@@ -1,4 +1,4 @@
-#!/home/emma/Desktop/pay_by_data/venv/bin/python
+#!/Users/Daisy/Desktop/individal_project/venv/bin/python
 
 import sys
 import getopt

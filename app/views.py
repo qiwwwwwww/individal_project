@@ -1,15 +1,17 @@
 from app import app
 from flask import Flask, request, flash, redirect, url_for, render_template,make_response
 import gridfs
-from pymongo import MongoClient 
+from pymongo import MongoClient
 from werkzeug.utils import secure_filename
 from gridfs.errors import NoFile
 from bson.objectid import ObjectId
+from .forms import DetailForm
+
 
 ALLOWED_EXTENSIONS = set(['apk'])
 db=MongoClient().pancake
 fs = gridfs.GridFS(db)
-
+good=db.good
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -30,10 +32,11 @@ def upload_file():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-        	filename = secure_filename(file.filename)
-        	oid = fs.put(file, content_type=file.content_type, filename=filename)
-    		redirect(url_for('upload_file', oid=str(oid)))
-    
+            filename = secure_filename(file.filename)
+            oid = fs.put(file, content_type=file.content_type, filename=filename)
+            # good.insert_one({'name': 'cupcake'})
+            return redirect(url_for('next', oid=str(oid)))
+        
     return render_template('upload_file.html')
 
 
@@ -61,3 +64,15 @@ def serve_gridfs_file(oid):
     except NoFile:
         abort(404)
 
+@app.route('/next/<string:oid>', methods=['GET','POST'])
+def next(oid):
+    form = DetailForm()
+    if form.validate_on_submit():
+        good.insert_one({
+        'title': form.title.data,
+        'description': form.description.data,
+        'apkid':oid
+        })
+        return redirect(url_for('list_gridfs_files'))
+    return render_template('next.html', form=form)
+    
