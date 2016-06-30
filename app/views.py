@@ -9,6 +9,7 @@ from .forms import DetailForm
 
 
 ALLOWED_EXTENSIONS = set(['apk'])
+ALLOWED_EXTENSIONS_02 = set(['png','jpg'])
 db=MongoClient().pancake
 fs = gridfs.GridFS(db)
 good=db.good
@@ -16,7 +17,34 @@ good=db.good
 def allowed_file(filename):
     return '.' in filename and \
     	filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-    
+
+def allowed_file_02(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS_02   
+
+@app.route('/img/<string:oid>', methods=['GET', 'POST'])
+def img_upload(oid):
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file_02(file.filename):
+            filename = secure_filename(file.filename)
+            oid_02 = fs.put(file, content_type=file.content_type, filename=filename)
+            good.update_one(
+                {"apkid": ObjectId(oid)},
+                { "$set": {"img_id": ObjectId(oid_02)}}
+                )
+            return redirect(url_for('list_gridfs_files'))
+        
+    return render_template('upload_file.html')
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -34,7 +62,6 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             oid = fs.put(file, content_type=file.content_type, filename=filename)
-            # good.insert_one({'name': 'cupcake'})
             return redirect(url_for('next', oid=str(oid)))
         
     return render_template('upload_file.html')
@@ -71,8 +98,9 @@ def next(oid):
         good.insert_one({
         'title': form.title.data,
         'description': form.description.data,
-        'apkid':oid
+        'apkid':ObjectId(oid)
         })
-        return redirect(url_for('list_gridfs_files'))
+        return redirect(url_for('img_upload', oid=oid))
     return render_template('next.html', form=form)
+
     
