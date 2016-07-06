@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Apps</h3>
+<a href="{{ url_for('upload_file') }}" class="btn btn-success btn-sm">
+  <i class="glyphicon glyphicon-plus"></i>
+  Add app
+</a>
+
+{% for file in files %}
+<div class="media">
+  <a href="/files/{{file._id}}">
+    <div class="media-left">
+      {% if file.img_id %}
+        <img src="/show/{{file.img_id}}">
+      {% else %}
+        <img src="http://placekitten.com/g/128/192">
+      {% endif %}
+    </div>
+    <div class="media-body">
+      <h4>{{file.title}}</h4>
+      <p>{{file.createdBy}}</p>
+    </div>
+  </a>
+</div>
+{% else %}
+<p>No files found</p>
+{% endfor %}
+
+{% if next_page_token %}
+<nav>
+  <ul class="pager">
+    <li><a href="?page_token={{next_page_token}}">More</a></li>
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

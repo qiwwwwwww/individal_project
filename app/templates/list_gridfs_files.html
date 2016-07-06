@@ -1,21 +1,14 @@
-<!DOCTYPE html>
-    <html>
-    <head>
-    <title>Files</title>
-    </head>
-    <body>
+{% extends "base.html" %}
+
+{% block content %}
+
     <h1>Files</h1>
     <ul>
     {% for file in files %}
-    <li>{{file.name}}
-    <a href="{{url_for('serve_gridfs_file', oid=file._id)}}">download</a>
-    <a href="{{url_for('remove_gridfs_files', filename=file.name)}}">remove</a>
+    <li>{{file.title}}
 
     </li>
     {% endfor %}
     </ul>
     <a href="{{ url_for('upload_file') }}">Upload new file</a>
-    <a href="{{ url_for('list_gridfs_files') }}">Refresh</a>
-
-    </body>
-    </html>
+{% endblock %}

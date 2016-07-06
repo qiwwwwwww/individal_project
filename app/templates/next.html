@@ -1,12 +1,8 @@
+{% extends "base.html" %}
 
-<!doctype html>
-    <html>
-    <head>
-    <title>More details</title>
-    </head>
-    <body>
+{% block content %}
     <h1>More details</h1>
-    <form method="post" action="">
+    <form method="POST" action="">
         {{ form.hidden_tag() }}
       <p>
       App title:<br>
@@ -16,10 +12,14 @@
       Description<br>
       {{form.description}}<br>
       </p>
+      <p>
+      Category<br>
+      {{form.category}}<br>
+      </p>
       <p><input type="submit" value="submit the details"></p>
     </form>
 
     <a href="{{ url_for('list_gridfs_files') }}">All files</a>
 
-    </body>
-    </html>
+{% endblock %}
+
