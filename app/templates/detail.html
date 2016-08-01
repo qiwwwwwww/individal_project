@@ -31,6 +31,10 @@
     <h5 class="book-author">By {{file.author|default('Unknown', True)}}</h5>
     <p class="book-description">{{file.description}}</p>
     <small class="book-added-by">Added by {{file.createdBy|default('Unknown', True)}}</small>
+    <small class="book-added-by">valid time {{file.valid_time|default('Unknown', True)}}</small>
+    <small class="book-added-by"> name {{file.scopes[0].name|default('Unknown', True)}}</small>
+    <small class="book-added-by"> frequency {{file.scopes[0].frequency|default('Unknown', True)}}</small>
+
   </div>
 </div>
 

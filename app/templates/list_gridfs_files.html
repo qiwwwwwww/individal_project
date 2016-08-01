@@ -11,4 +11,6 @@
     {% endfor %}
     </ul>
     <a href="{{ url_for('upload_file') }}">Upload new file</a>
+    <a href="{{ url_for('json_upload',oid=oid) }}">Upload json</a>
+
 {% endblock %}

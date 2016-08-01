@@ -16,8 +16,10 @@
 
 import threading
 
-from pymongo import monitor, pool
+from bson.objectid import ObjectId
+from pymongo import common, monitor, pool
 from pymongo.common import LOCAL_THRESHOLD_MS, SERVER_SELECTION_TIMEOUT
+from pymongo.errors import ConfigurationError
 from pymongo.topology_description import TOPOLOGY_TYPE
 from pymongo.pool import PoolOptions
 from pymongo.server_description import ServerDescription
@@ -32,11 +34,16 @@ class TopologySettings(object):
                  monitor_class=None,
                  condition_class=None,
                  local_threshold_ms=LOCAL_THRESHOLD_MS,
-                 server_selection_timeout=SERVER_SELECTION_TIMEOUT):
+                 server_selection_timeout=SERVER_SELECTION_TIMEOUT,
+                 heartbeat_frequency=common.HEARTBEAT_FREQUENCY):
         """Represent MongoClient's configuration.
 
         Take a list of (host, port) pairs and optional replica set name.
         """
+        if heartbeat_frequency < common.MIN_HEARTBEAT_INTERVAL:
+            raise ConfigurationError("%s cannot be less than %.1f" % (
+                'heartbeatFrequencyMS', common.MIN_HEARTBEAT_INTERVAL))
+
         self._seeds = seeds or [('localhost', 27017)]
         self._replica_set_name = replica_set_name
         self._pool_class = pool_class or pool.Pool
@@ -45,7 +52,9 @@ class TopologySettings(object):
         self._condition_class = condition_class or threading.Condition
         self._local_threshold_ms = local_threshold_ms
         self._server_selection_timeout = server_selection_timeout
+        self._heartbeat_frequency = heartbeat_frequency
         self._direct = (len(self._seeds) == 1 and not replica_set_name)
+        self._topology_id = ObjectId()
 
     @property
     def seeds(self):
@@ -79,6 +88,10 @@ class TopologySettings(object):
     @property
     def server_selection_timeout(self):
         return self._server_selection_timeout
+
+    @property
+    def heartbeat_frequency(self):
+        return self._heartbeat_frequency
 
     @property
     def direct(self):

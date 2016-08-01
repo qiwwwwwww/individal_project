@@ -1,18 +1,23 @@
 from app import app, oauth2, session
 from flask import Flask, request, flash, redirect, url_for, render_template,make_response
+from flask import json as fJson
 import gridfs
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
 from gridfs.errors import NoFile
 from bson.objectid import ObjectId
 from .forms import DetailForm
+import json
 
 
 ALLOWED_EXTENSIONS = set(['apk'])
 ALLOWED_EXTENSIONS_02 = set(['png','jpg'])
+ALLOWED_EXTENSIONS_03 = set(['json'])
+
 db=MongoClient().pancake
 fs = gridfs.GridFS(db)
 appstore=db.appstore
+jsonstore = db.jsonstore
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -22,6 +27,9 @@ def allowed_file_02(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS_02  
 
+def allowed_file_03(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS_03  
 
 @app.route('/upload', methods=['GET', 'POST'])
 @oauth2.required
@@ -83,9 +91,38 @@ def img_upload(oid):
                 {"apkid": ObjectId(oid)},
                 { "$set": {"img_id": ObjectId(oid_02)}}
                 )
+            return redirect(url_for('json_upload', oid=oid))
+        
+    return render_template('upload_file.html')
+    #         return redirect(url_for('list_gridfs_files'))
+        
+    # return render_template('upload_file.html')
+
+@app.route('/json/<string:oid>', methods=['GET', 'POST'])
+@oauth2.required
+def json_upload(oid):
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file_03(file.filename):
+            filename = secure_filename(file.filename)
+            myfile=file.read()
+            incident=json.loads(myfile)
+            appstore.update_one(
+                {"apkid": ObjectId(oid)},
+                { "$set": incident}
+                )
             return redirect(url_for('list_gridfs_files'))
         
     return render_template('upload_file.html')
+
 
 
 @app.route('/files')
@@ -98,7 +135,6 @@ def list_gridfs_files():
 @app.route('/files/<id>')
 def detail(id):
     file=appstore.find_one({'_id': ObjectId(str(id))})
-
     return render_template('detail.html', file=file)
 
 
