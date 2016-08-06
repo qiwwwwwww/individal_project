@@ -31,6 +31,15 @@ def allowed_file_03(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS_03  
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return render_template('index.html')
+
+@app.route('/profile', methods=['GET', 'POST'])
+@oauth2.required
+def profile():   
+    return render_template('profile.html')
+
 @app.route('/upload', methods=['GET', 'POST'])
 @oauth2.required
 def upload_file():
@@ -135,7 +144,8 @@ def list_gridfs_files():
 @app.route('/files/<id>')
 def detail(id):
     file=appstore.find_one({'_id': ObjectId(str(id))})
-    return render_template('detail.html', file=file)
+    files = appstore.find({'category': file['category']})
+    return render_template('detail.html', file=file, files=files)
 
 
 @app.route('/mine')
