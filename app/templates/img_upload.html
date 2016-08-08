@@ -12,7 +12,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">App Submission
-                    <small> Step 2: Fill in app details</small>
+                    <small> Step 3: Uploading icon image</small>
                 </h1>
             </div>
         </div>
@@ -28,25 +28,25 @@
                   <div class="bs-wizard-info text-center">Uploading apk files</div>
                 </div>
                 
-                <div class="col-xs-2 bs-wizard-step active"><!-- complete -->
+                <div class="col-xs-2 bs-wizard-step complete"><!-- complete -->
                   <div class="text-center bs-wizard-stepnum">Step 2</div>
                   <div class="progress"><div class="progress-bar"></div></div>
                   <a href="#" class="bs-wizard-dot"></a>
-                  <div class="bs-wizard-info text-center">Fill in app details</div>
+                  <div class="bs-wizard-info text-center">Filling in app details</div>
                 </div>
                 
-                <div class="col-xs-2 bs-wizard-step disabled"><!-- complete -->
+                <div class="col-xs-2 bs-wizard-step active"><!-- complete -->
                   <div class="text-center bs-wizard-stepnum">Step 3</div>
                   <div class="progress"><div class="progress-bar"></div></div>
                   <a href="#" class="bs-wizard-dot"></a>
-                  <div class="bs-wizard-info text-center">Upload icon image.</div>
+                  <div class="bs-wizard-info text-center">Uploading icon image</div>
                 </div>
                 
                 <div class="col-xs-2 bs-wizard-step disabled"><!-- active -->
                   <div class="text-center bs-wizard-stepnum">Step 4</div>
                   <div class="progress"><div class="progress-bar"></div></div>
                   <a href="#" class="bs-wizard-dot"></a>
-                  <div class="bs-wizard-info text-center">Upload json file</div>
+                  <div class="bs-wizard-info text-center">Uploading json file</div>
                 </div>
 
                 <div class="col-xs-2 bs-wizard-step disabled"><!-- active -->
@@ -58,24 +58,12 @@
             </div>
 
     <div class="col-md-12 portfolio-item">
-    <h2 class="page-header" >More details</h2>
+    <h2 class="page-header" >Uploading Icon image</h2>
 
-    <form method="POST" action="">
-      {{ form.hidden_tag() }}
-        <p>
-          App title:<br>
-          {{form.title}}<br>
-        </p>
-        <p>
-          Description<br>
-          {{form.description}}<br>
-        </p>
-        <p>
-          Category<br>
-          {{form.category}}<br>
-        </p>
-        <p><input type="submit" value="submit the details"></p>
-        </form>
+    <form action="" method="post" enctype="multipart/form-data">
+      <p><input type="file" name="file"></p>
+       <p> <input type="submit" value="upload the file" ></p>  
+    </form>
     </div>
 </div>    
 {% endblock %}

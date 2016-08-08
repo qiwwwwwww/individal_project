@@ -102,7 +102,7 @@ def img_upload(oid):
                 )
             return redirect(url_for('json_upload', oid=oid))
         
-    return render_template('upload_file.html')
+    return render_template('img_upload.html')
     #         return redirect(url_for('list_gridfs_files'))
         
     # return render_template('upload_file.html')
@@ -128,9 +128,9 @@ def json_upload(oid):
                 {"apkid": ObjectId(oid)},
                 { "$set": incident}
                 )
-            return redirect(url_for('list_gridfs_files'))
+            return render_template('complete.html')
         
-    return render_template('upload_file.html')
+    return render_template('json_upload.html')
 
 
 
